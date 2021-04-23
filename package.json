@@ -1,0 +1,40 @@
+{
+  "name": "@bmc-compuware/ispw-action-utilities",
+  "version": "0.1.1",
+  "description": "Utilities to be used in ISPW GitHub actions",
+  "main": "index.js",
+  "scripts": {
+    "lint": "npx eslint ./**.js --fix",
+    "test": "nyc --all=true --exclude=\"dist/**\" --exclude=\"coverage/**\" --exclude=\"test/**\" --reporter=json --reporter=text mocha",
+    "coverage": "nyc check-coverage --lines 80 --branches 80 --statements 80 --functions 80",
+    "check": "npm run lint && npm run test && npm run coverage",
+    "prepublish": "npm run check"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Compuware-ISPW/ispw-action-utilities.git"
+  },
+  "keywords": [
+    "ispw",
+    "compuware",
+    "bmc",
+    "github",
+    "actions",
+    "rest"
+  ],
+  "author": "BMC-Compuware",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Compuware-ISPW/ispw-action-utilities/issues"
+  },
+  "homepage": "https://github.com/Compuware-ISPW/ispw-action-utilities#readme",
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "eslint": "^7.23.0",
+    "eslint-config-google": "^0.14.0",
+    "esm": "^3.2.25",
+    "mocha": "^8.3.2",
+    "nock": "^13.0.11",
+    "nyc": "^15.1.0"
+  }
+}
