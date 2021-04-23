@@ -71,69 +71,6 @@ describe('Testing index.js', function () {
     });
   });
 
-  describe('#getParmsFromInputs(inputAssignment, inputLevel, inputTaskId)', function () {
-    it('should return empty - null passed in', function () {
-      var utils = require('../index.js');
-      let output = utils.getParmsFromInputs(null, null, null);
-      assert.isNotNull(output);
-      assert.strictEqual(output.containerId, undefined);
-      assert.strictEqual(output.taskLevel, undefined);
-      assert.strictEqual(output.releaseId, undefined);
-      assert.strictEqual(output.taskIds, undefined);
-    });
-
-    it('should return empty - undefined passed in', function () {
-      var utils = require('../index.js');
-      let output = utils.getParmsFromInputs(undefined, undefined, undefined);
-      assert.isNotNull(output);
-      assert.strictEqual(output.containerId, undefined);
-      assert.strictEqual(output.taskLevel, undefined);
-      assert.strictEqual(output.releaseId, undefined);
-      assert.strictEqual(output.taskIds, undefined);
-    });
-
-    it('should return empty - empty passed in', function () {
-      var utils = require('../index.js');
-      let output = utils.getParmsFromInputs('', '', '');
-      assert.isNotNull(output);
-      assert.strictEqual(output.containerId, undefined);
-      assert.strictEqual(output.taskLevel, undefined);
-      assert.strictEqual(output.releaseId, undefined);
-      assert.strictEqual(output.taskIds, undefined);
-    });
-
-    it('should have assignment defined', function () {
-      var utils = require('../index.js');
-      let output = utils.getParmsFromInputs('assignment123', '', '');
-      assert.isNotNull(output);
-      assert.strictEqual(output.containerId, 'assignment123');
-      assert.strictEqual(output.taskLevel, undefined);
-      assert.strictEqual(output.releaseId, undefined);
-      assert.strictEqual(output.taskIds, undefined);
-    });
-
-    it('should have level defined', function () {
-      var utils = require('../index.js');
-      let output = utils.getParmsFromInputs('', 'level', '');
-      assert.isNotNull(output);
-      assert.strictEqual(output.containerId, undefined);
-      assert.strictEqual(output.taskLevel, 'level');
-      assert.strictEqual(output.releaseId, undefined);
-      assert.strictEqual(output.taskIds, undefined);
-    });
-
-    it('should have taskIds defined', function () {
-      var utils = require('../index.js');
-      let output = utils.getParmsFromInputs('', '', 'task1,task2,task3,task4');
-      assert.isNotNull(output);
-      assert.strictEqual(output.containerId, undefined);
-      assert.strictEqual(output.taskLevel, undefined);
-      assert.strictEqual(output.releaseId, undefined);
-      assert.deepStrictEqual(output.taskIds, ['task1', 'task2', 'task3', 'task4']);
-    });
-
-  });
-
 
   describe('#validateBuildParms(buildParms)', function () {
     it('should return false - no parms defined', function () {

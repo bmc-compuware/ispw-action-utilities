@@ -26,31 +26,6 @@ function parseStringAsJson(jsonString) {
   }
   return parsedObj;
 }
-/**
- * Uses the input parameters from the action metadata to fille in a BuildParms
- * object.
- * @param  {string} inputAssignment the assignmentId passed into the action
- * @param  {string} inputLevel the ISPW level passed into the action
- * @param  {string} inputTaskId the comma separated list of task IDs passed
- * into the action
- * @return {BuildParms} a BuildParms object with the fields filled in.
- * This will never return undefined.
- */
-function getParmsFromInputs(inputAssignment, inputLevel, inputTaskId) {
-  const buildParms = {};
-  if (stringHasContent(inputAssignment)) {
-    buildParms.containerId = inputAssignment;
-  }
-
-  if (stringHasContent(inputLevel)) {
-    buildParms.taskLevel = inputLevel;
-  }
-
-  if (stringHasContent(inputTaskId)) {
-    buildParms.taskIds = inputTaskId.split(',');
-  }
-  return buildParms;
-}
 
 /**
  * Validates the given BuildParms object to ensure that all the fields
@@ -284,7 +259,6 @@ GenerateFailureException.prototype = Object.create(Error.prototype);
 module.exports = {
   retrieveInputs,
   parseStringAsJson,
-  getParmsFromInputs,
   validateBuildParms,
   convertObjectToJson,
   assembleRequestUrl,
