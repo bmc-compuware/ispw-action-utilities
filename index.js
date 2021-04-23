@@ -6,20 +6,10 @@ const http = require('http');
  * @return {*} an object with all the input fields
  * (whether they are defined or not)
  */
-function retrieveInputs(core) {
-  return {
-    generateAutomatically: core.getInput('generate_automatically'),
-    assignmentId: core.getInput('assignment_id'),
-    level: core.getInput('level'),
-    taskId: core.getInput('task_id'),
-    cesUrl: core.getInput('ces_url'),
-    cesToken: core.getInput('ces_token'),
-    srid: core.getInput('srid'),
-    runtimeConfig: core.getInput('runtime_configuration'),
-    changeType: core.getInput('change_type'),
-    execStat: core.getInput('execution_status'),
-    autoDeploy: core.getInput('auto_deploy'),
-  };
+function retrieveInputs(core, inputFields = []) {
+  let inputs = {};
+  inputFields.forEach(inputName => inputs[inputName] = core.getInput(inputName));
+  return inputs;
 }
 
 /**

@@ -19,25 +19,28 @@ describe('Testing index.js', function () {
       }
     };
     it('should return inputs', function () {
-      let output = utils.retrieveInputs(core);
-      assert.strictEqual(output.generateAutomatically, 'generate_automatically');
-      assert.strictEqual(output.assignmentId, 'assignment_id');
+      let inputFields = ['generate_automatically', 
+      'assignment_id', 'level', 'task_id', 'ces_url', 
+      'ces_token', 'srid', 'runtime_configuration', 'change_type',
+      'execution_status', 'auto_deploy'];
+      let output = utils.retrieveInputs(core, inputFields);
+      assert.strictEqual(output.generate_automatically, 'generate_automatically');
+      assert.strictEqual(output.assignment_id, 'assignment_id');
       assert.strictEqual(output.level, 'level');
-      assert.strictEqual(output.taskId, 'task_id');
-      assert.strictEqual(output.cesUrl, 'ces_url');
-      assert.strictEqual(output.cesToken, 'ces_token');
+      assert.strictEqual(output.task_id, 'task_id');
+      assert.strictEqual(output.ces_url, 'ces_url');
+      assert.strictEqual(output.ces_token, 'ces_token');
       assert.strictEqual(output.srid, 'srid');
-      assert.strictEqual(output.runtimeConfig, 'runtime_configuration');
-      assert.strictEqual(output.changeType, 'change_type');
-      assert.strictEqual(output.execStat, 'execution_status');
-      assert.strictEqual(output.autoDeploy, 'auto_deploy');
+      assert.strictEqual(output.runtime_configuration, 'runtime_configuration');
+      assert.strictEqual(output.change_type, 'change_type');
+      assert.strictEqual(output.execution_status, 'execution_status');
+      assert.strictEqual(output.auto_deploy, 'auto_deploy');
       assert.strictEqual(output.other, undefined);
     });
   });
 
 
   describe('#parseStringAsJson(jsonString)', function () {
-    this.timeout(5000);
     it('should return empty buildparms', function () {
       var utils = require('../index.js');
       let output = utils.parseStringAsJson(JSON.stringify({}));
