@@ -1,14 +1,24 @@
+/**
+* ALL BMC SOFTWARE PRODUCTS LISTED WITHIN THE MATERIALS ARE TRADEMARKS OF BMC
+* SOFTWARE, INC. ALL OTHER COMPANY PRODUCT NAMES ARE TRADEMARKS OF THEIR
+* RESPECTIVE OWNERS.
+*
+* (c) Copyright 2021 BMC Software, Inc.
+* This code is licensed under MIT license (see LICENSE.txt for details)
+*/
+
 const axios = require('axios').default;
 
 /**
  * Retrieves the action inputs from github core and returns them as a object
- * @param {core} core
+ * @param {core} core the GitHub actions core
+ * @param {string []} inputFields an array holding the names of the input fields to read from core
  * @return {string []} a string array with all the input field names
  * (whether they are defined or not)
  */
 function retrieveInputs(core, inputFields) {
-  let inputs = {};
-  inputFields.forEach(inputName => inputs[inputName] = core.getInput(inputName));
+  const inputs = {};
+  inputFields.forEach((inputName) => inputs[inputName] = core.getInput(inputName));
   return inputs;
 }
 
@@ -32,7 +42,7 @@ function parseStringAsJson(jsonString) {
  * are filled in.
  * @param  {BuildParms} buildParms the BuildParms object to check
  * @param {string []} requiredFields an array of field names for the required buildParms fields.
- * For example, ['containerId', 'taskLevel'] means that the "containerId" and "taskLevel" fields 
+ * For example, ['containerId', 'taskLevel'] means that the "containerId" and "taskLevel" fields
  * are required to be specified in the given buildParms object
  * @return {boolean} boolean indicating whether the build parms are valid
  */
@@ -41,7 +51,7 @@ function validateBuildParms(buildParms, requiredFields) {
   if (buildParms !== null && buildParms !== undefined) {
     isValid = true;
 
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       if (!stringHasContent(buildParms[field])) {
         isValid = false;
         console.error(getMissingInputMessage(field));
@@ -54,18 +64,18 @@ function validateBuildParms(buildParms, requiredFields) {
 /**
  * Gets a message which indicates that a required input field is missing.
  * @param {string} fieldName the name of the buildParms field which is required and not found
- * @returns {string} a message telling the user that the required field must be specified. The 
+ * @return {string} a message telling the user that the required field must be specified. The
  * build parms field name has been replaced with a more meaningful name.
  */
 function getMissingInputMessage(fieldName) {
-  let fieldNameReplacement = {
+  const fieldNameReplacement = {
     containerId: 'n assignment ID',
     releaseId: ' release ID',
     taskLevel: ' level',
-    taskIds: ' list of task IDs'
-  }
+    taskIds: ' list of task IDs',
+  };
 
-  return `Missing input: a${fieldNameReplacement[fieldName]} must be specified.`
+  return `Missing input: a${fieldNameReplacement[fieldName]} must be specified.`;
 }
 
 /**
@@ -86,8 +96,9 @@ function convertObjectToJson(data) {
  * Assembles the URL to use when sending the generate request.
  * @param  {string} cesUrl the base CES URL that was passed in the action
  * arguments
- * @param  {string} requestPath the action-specific request portion of the request url, beginning with a slash.
- * For example, '/ispw/srid/assignments/assignment345/taskIds/generate-await?taskId=7bd249ba12&level=DEV2'
+ * @param  {string} requestPath the action-specific request portion of the request url,
+ * beginning with a slash. SFor example,
+ * '/ispw/srid/assignments/assignment345/taskIds/generate-await?taskId=7bd249ba12&level=DEV2'
  * @return {URL} the url for the request
  */
 function assembleRequestUrl(cesUrl, requestPath) {
@@ -110,7 +121,7 @@ function assembleRequestUrl(cesUrl, requestPath) {
     cesUrl = cesUrl.substr(0, cesUrl.length - 1);
   }
 
-  let tempUrlStr = cesUrl.concat(requestPath);
+  const tempUrlStr = cesUrl.concat(requestPath);
   const url = new URL(tempUrlStr);
   return url;
 }
@@ -136,12 +147,11 @@ function stringHasContent(inputStr) {
  * @return {Promise} the Promise for the request
  */
 function getHttpPromise(requestUrl, token, requestBody) {
-
   const options = {
     headers: {
       'Content-Type': 'application/json',
       'authorization': token,
-    }
+    },
   };
   return axios.post(requestUrl.href, requestBody, options);
 }
