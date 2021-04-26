@@ -215,51 +215,35 @@ describe('Testing index.js', function () {
   describe('#assembleRequestUrl(CESUrl, buildParms)', function () {
     it('should use CES url as it is', function () {
       var utils = require('../index.js');
-      let buildParms = {
-        containerId: 'assignment345',
-        taskLevel: 'DEV2',
-        taskIds: ['a37b46c2', '7bd249ba12']
-      };
+      let path = '/ispw/ISPW/assignments/assignment345/taskIds/generate-await?taskId=a37b46c2&taskId=7bd249ba12&level=DEV2'
       let cesUrl = 'https://ces:48226'
-      let output = utils.assembleRequestUrl(cesUrl, 'ISPW', buildParms);
+      let output = utils.assembleRequestUrl(cesUrl, path);
       assert.equal(output.href, 'https://ces:48226/ispw/ISPW/assignments/assignment345/taskIds/generate-await?taskId=a37b46c2&taskId=7bd249ba12&level=DEV2');
     });
 
     it('should modify CES url to remove Compuware', function () {
       var utils = require('../index.js');
-      let buildParms = {
-        containerId: 'assignment345',
-        taskLevel: 'DEV2',
-        taskIds: ['a37b46c2', '7bd249ba12']
-      };
+      let path = '/ispw/ISPW/assignments/assignment345/taskIds/generate-await?taskId=a37b46c2&taskId=7bd249ba12&level=DEV2'
       let cesUrl = 'https://ces:48226/Compuware'
-      let output = utils.assembleRequestUrl(cesUrl, 'ISPW', buildParms);
+      let output = utils.assembleRequestUrl(cesUrl, path);
       assert.strictEqual(output.href, 'https://ces:48226/ispw/ISPW/assignments/assignment345/taskIds/generate-await?taskId=a37b46c2&taskId=7bd249ba12&level=DEV2');
 
     });
 
     it('should modify CES url to remove ispw', function () {
       var utils = require('../index.js');
-      let buildParms = {
-        containerId: 'assignment345',
-        taskLevel: 'DEV2',
-        taskIds: ['a37b46c2', '7bd249ba12']
-      };
+      let path = '/ispw/srid/assignments/assignment345/taskIds/generate-await?taskId=a37b46c2&taskId=7bd249ba12&level=DEV2'
       let cesUrl = 'https://ces:48226/isPw'
-      let output = utils.assembleRequestUrl(cesUrl, 'srid', buildParms);
+      let output = utils.assembleRequestUrl(cesUrl, path);
       assert.strictEqual(output.href, 'https://ces:48226/ispw/srid/assignments/assignment345/taskIds/generate-await?taskId=a37b46c2&taskId=7bd249ba12&level=DEV2');
     });
 
     it('should modify CES url to remove trailing slash', function () {
       var utils = require('../index.js');
-      let buildParms = {
-        containerId: 'assignment345',
-        taskLevel: 'DEV2',
-        taskIds: ['a37b46c2', '7bd249ba12']
-      };
+      let path = '/ispw/srid/assignments/assignment345/taskIds/generate-await?taskId=a37b46c2&taskId=7bd249ba12&level=DEV2'
       let cesUrl = 'https://ces:48226/'
-      let output = utils.assembleRequestUrl(cesUrl, 'cw09-47623', buildParms);
-      assert.strictEqual(output.href, 'https://ces:48226/ispw/cw09-47623/assignments/assignment345/taskIds/generate-await?taskId=a37b46c2&taskId=7bd249ba12&level=DEV2');
+      let output = utils.assembleRequestUrl(cesUrl, path);
+      assert.strictEqual(output.href, 'https://ces:48226/ispw/srid/assignments/assignment345/taskIds/generate-await?taskId=a37b46c2&taskId=7bd249ba12&level=DEV2');
     });
   });
 

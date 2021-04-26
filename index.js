@@ -3,10 +3,10 @@ const http = require('http');
 /**
  * Retrieves the action inputs from github core and returns them as a object
  * @param {core} core
- * @return {*} an object with all the input fields
+ * @return {string []} a string array with all the input field names
  * (whether they are defined or not)
  */
-function retrieveInputs(core, inputFields = []) {
+function retrieveInputs(core, inputFields) {
   let inputs = {};
   inputFields.forEach(inputName => inputs[inputName] = core.getInput(inputName));
   return inputs;
@@ -31,9 +31,12 @@ function parseStringAsJson(jsonString) {
  * Validates the given BuildParms object to ensure that all the fields
  * are filled in.
  * @param  {BuildParms} buildParms the BuildParms object to check
+ * @param {string []} requiredFields an array of field names for the required buildParms fields.
+ * For example, ['containerId', 'taskLevel'] means that the "containerId" and "taskLevel" fields 
+ * are required to be specified in the given buildParms object
  * @return {boolean} boolean indicating whether the build parms are valid
  */
-function validateBuildParms(buildParms, requiredFields = []) {
+function validateBuildParms(buildParms, requiredFields) {
   let isValid = false;
   if (buildParms !== null && buildParms !== undefined) {
     isValid = true;
@@ -83,12 +86,11 @@ function convertObjectToJson(data) {
  * Assembles the URL to use when sending the generate request.
  * @param  {string} cesUrl the base CES URL that was passed in the action
  * arguments
- * @param  {string} srid the SRID for this ISPW
- * @param  {BuildParms} buildParms the BuildParms object with all the fields
- * filled in
+ * @param  {string} requestPath the action-specific request portion of the request url, beginning with a slash.
+ * For example, '/ispw/srid/assignments/assignment345/taskIds/generate-await?taskId=7bd249ba12&level=DEV2'
  * @return {URL} the url for the request
  */
-function assembleRequestUrl(cesUrl, srid, buildParms) {
+function assembleRequestUrl(cesUrl, requestPath) {
   // remove trailing '/compuware' from url, if it exists
   let lowercaseUrl = cesUrl.toLowerCase();
   const cpwrIndex = lowercaseUrl.lastIndexOf('/compuware');
@@ -108,14 +110,7 @@ function assembleRequestUrl(cesUrl, srid, buildParms) {
     cesUrl = cesUrl.substr(0, cesUrl.length - 1);
   }
 
-  let tempUrlStr = cesUrl.concat(`/ispw/${srid}/assignments/`);
-  tempUrlStr = tempUrlStr.concat(buildParms.containerId);
-  tempUrlStr = tempUrlStr.concat('/taskIds/generate-await?');
-  buildParms.taskIds.forEach((id) => {
-    tempUrlStr = tempUrlStr.concat(`taskId=${id}&`);
-  });
-  tempUrlStr = tempUrlStr.concat(`level=${buildParms.taskLevel}`);
-
+  let tempUrlStr = cesUrl.concat(requestPath);
   const url = new URL(tempUrlStr);
   return url;
 }
