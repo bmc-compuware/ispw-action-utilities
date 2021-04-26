@@ -1,4 +1,3 @@
-const http = require('http');
 const axios = require('axios').default;
 
 /**
@@ -129,7 +128,6 @@ function stringHasContent(inputStr) {
   return hasContent;
 }
 
-
 /**
  * Gets a promise for sending an http request
  * @param {URL} requestUrl the URL to send hte request to
@@ -148,36 +146,6 @@ function getHttpPromise(requestUrl, token, requestBody) {
   return axios.post(requestUrl.href, requestBody, options);
 }
 
-/**
- * Examines the given response body to determine whether an error occurred
- * during the generate.
- * @param {*} responseBody The body returned from the CES request
- * @return {*} The response body object if the generate was successful,
- * else throws an error
- * @throws GenerateFailureException if there were failures during the generate
- */
-function handleResponseBody(responseBody) {
-  if (responseBody === undefined) {
-    // empty response
-    throw new GenerateFailureException(
-        'No response was received from the generate request.');
-  } else if (responseBody.awaitStatus === undefined) {
-    // message may have been returned
-    if (responseBody.message) {
-      console.log(responseBody.message);
-    }
-    throw new GenerateFailureException(
-        'The generate did not complete successfully.');
-  } else if (responseBody.awaitStatus.generateFailedCount !== 0) {
-    console.error(getStatusMessageToPrint(responseBody.awaitStatus.statusMsg));
-    throw new GenerateFailureException(
-        'There were generate failures.');
-  } else {
-    // success
-    console.log(getStatusMessageToPrint(responseBody.awaitStatus.statusMsg));
-    return responseBody;
-  }
-}
 
 /**
  * The status message in the awaitStatus may be a single string, or an array.
@@ -196,16 +164,6 @@ function getStatusMessageToPrint(statusMsg) {
   return message;
 }
 
-/**
- * Error to throw when the response for the generate request is incomplete
- *  or indicates errors.
- * @param  {string} message the message associated with the error
- */
-function GenerateFailureException(message) {
-  this.message = message;
-  this.name = 'GenerateFailureException';
-}
-GenerateFailureException.prototype = Object.create(Error.prototype);
 
 module.exports = {
   retrieveInputs,
@@ -214,7 +172,6 @@ module.exports = {
   convertObjectToJson,
   assembleRequestUrl,
   stringHasContent,
-  GenerateFailureException,
-  handleResponseBody,
+  getStatusMessageToPrint,
   getHttpPromise,
 };
