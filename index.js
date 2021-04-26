@@ -33,28 +33,36 @@ function parseStringAsJson(jsonString) {
  * @param  {BuildParms} buildParms the BuildParms object to check
  * @return {boolean} boolean indicating whether the build parms are valid
  */
-function validateBuildParms(buildParms) {
+function validateBuildParms(buildParms, requiredFields = []) {
   let isValid = false;
   if (buildParms !== null && buildParms !== undefined) {
     isValid = true;
-    if (!stringHasContent(buildParms.containerId)) {
-      isValid = false;
-      console.error('A container ID must be specified.');
-    }
 
-    if (!stringHasContent(buildParms.taskLevel)) {
-      isValid = false;
-      console.error('A level must be specified.');
-    }
-
-    if (buildParms.taskIds === null ||
-      buildParms.taskIds === undefined ||
-      buildParms.taskIds.length === 0) {
-      isValid = false;
-      console.error('A list of task IDs must be specified.');
-    }
+    requiredFields.forEach(field => {
+      if (!stringHasContent(buildParms[field])) {
+        isValid = false;
+        console.error(getMissingInputMessage(field));
+      }
+    });
   }
   return isValid;
+}
+
+/**
+ * Gets a message which indicates that a required input field is missing.
+ * @param {string} fieldName the name of the buildParms field which is required and not found
+ * @returns {string} a message telling the user that the required field must be specified. The 
+ * build parms field name has been replaced with a more meaningful name.
+ */
+function getMissingInputMessage(fieldName) {
+  let fieldNameReplacement = {
+    containerId: 'n assignment ID',
+    releaseId: ' release ID',
+    taskLevel: ' level',
+    taskIds: ' list of task IDs'
+  }
+
+  return `Missing input: a${fieldNameReplacement[fieldName]} must be specified.`
 }
 
 /**

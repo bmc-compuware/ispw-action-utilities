@@ -11,7 +11,7 @@ var expect = chai.expect;
 
 describe('Testing index.js', function () {
 
-  describe('#retrieveInputs(core)', function () {
+  describe('#retrieveInputs(core, inputFields = [])', function () {
     var utils = require('../index.js');
     let core = {
       getInput: function (inputName) {
@@ -72,111 +72,111 @@ describe('Testing index.js', function () {
   });
 
 
-  describe('#validateBuildParms(buildParms)', function () {
+  describe('#validateBuildParms(buildParms, requiredFields = [])', function () {
+    var utils = require('../index.js');
     it('should return false - no parms defined', function () {
-      var utils = require('../index.js');
+      let requiredFields = ['containerId', 'taskLevel', 'taskIds'];
       let buildParms = {};
-      let output = utils.validateBuildParms(buildParms);
+      let output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
     });
 
     it('should return false - buildParms are null', function () {
-      var utils = require('../index.js');
-      let output = utils.validateBuildParms(null);
+      let requiredFields = ['containerId', 'taskLevel', 'taskIds'];
+      let output = utils.validateBuildParms(null, requiredFields);
       assert.isFalse(output);
     });
 
     it('should return false - buildParms are undefined', function () {
-      var utils = require('../index.js');
-      let output = utils.validateBuildParms(undefined);
+      let requiredFields = ['containerId', 'taskLevel', 'taskIds'];
+      let output = utils.validateBuildParms(undefined, requiredFields);
       assert.isFalse(output);
     });
 
     it('should return false - taskLevel & taskIds not defined', function () {
-      var utils = require('../index.js');
+      let requiredFields = ['containerId', 'taskLevel', 'taskIds'];
       let buildParms = { containerId: null };
-      let output = utils.validateBuildParms(buildParms);
+      let output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
 
       buildParms = { containerId: undefined };
-      output = utils.validateBuildParms(buildParms);
+      output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
 
       buildParms = { containerId: '' };
-      output = utils.validateBuildParms(buildParms);
+      output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
 
       buildParms = { containerId: 'assignment1' };
-      output = utils.validateBuildParms(buildParms);
+      output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
     });
 
     it('should return false - containerId & taskIds not defined', function () {
-      var utils = require('../index.js');
+      let requiredFields = ['containerId', 'taskLevel', 'taskIds'];
       let buildParms = { taskLevel: null };
-      let output = utils.validateBuildParms(buildParms);
+      let output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
 
       buildParms = { taskLevel: undefined };
-      output = utils.validateBuildParms(buildParms);
+      output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
 
       buildParms = { taskLevel: '' };
-      output = utils.validateBuildParms(buildParms);
+      output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
 
       buildParms = { taskLevel: 'level1' };
-      output = utils.validateBuildParms(buildParms);
+      output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
     });
 
     it('should return false - containerId & taskLevel not defined', function () {
-      var utils = require('../index.js');
+      let requiredFields = ['containerId', 'taskLevel', 'taskIds'];
       let buildParms = { taskIds: null };
-      let output = utils.validateBuildParms(buildParms);
+      let output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
 
       buildParms = { taskIds: undefined };
-      output = utils.validateBuildParms(buildParms);
+      output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
 
       buildParms = { taskIds: [] };
-      output = utils.validateBuildParms(buildParms);
+      output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
 
       buildParms = { taskIds: ['task1', 'task2'] };
-      output = utils.validateBuildParms(buildParms);
+      output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
     });
 
     it('should return false - containerId not defined', function () {
-      var utils = require('../index.js');
+      let requiredFields = ['containerId', 'taskLevel', 'taskIds'];
       let buildParms = { taskLevel: 'level2', taskIds: ['task1', 'task2'] };
-      let output = utils.validateBuildParms(buildParms);
+      let output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
     });
 
     it('should return false - taskLevel not defined', function () {
-      var utils = require('../index.js');
+      let requiredFields = ['containerId', 'taskLevel', 'taskIds'];
       let buildParms = { containerId: 'assignment2', taskIds: ['task1', 'task2'] };
-      let output = utils.validateBuildParms(buildParms);
+      let output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
     });
 
     it('should return false - taskIds not defined', function () {
-      var utils = require('../index.js');
+      let requiredFields = ['containerId', 'taskLevel', 'taskIds'];
       let buildParms = { containerId: 'assignment2', taskLevel: 'level3' };
-      let output = utils.validateBuildParms(buildParms);
+      let output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
     });
 
     it('should return true - everything defined', function () {
-      var utils = require('../index.js');
+      let requiredFields = ['containerId', 'taskLevel', 'taskIds'];
       let buildParms = { containerId: 'assignment2', taskLevel: 'level3', taskIds: ['task1', 'task2'] };
-      let output = utils.validateBuildParms(buildParms);
+      let output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isTrue(output);
     });
-
   });
 
 
