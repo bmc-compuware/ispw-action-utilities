@@ -248,92 +248,6 @@ describe('Testing index.js', function () {
   });
 
 
-  describe('#assembleRequestBodyObject(runtimeConfig, changeType, executionStatus, autoDeploy)', function () {
-    it('should be missing runtime config', function () {
-      var utils = require('../index.js');
-      let output = utils.assembleRequestBodyObject(null, 'E', 'H', 'false');
-      assert.strictEqual(output.runtimeConfig, undefined);
-      assert.strictEqual(output.changeType, 'E');
-      assert.strictEqual(output.execStat, 'H');
-      assert.strictEqual(output.autoDeploy, false);
-
-      output = utils.assembleRequestBodyObject(undefined, 'E', 'H', 'false');
-      assert.strictEqual(output.runtimeConfig, undefined);
-      assert.strictEqual(output.changeType, 'E');
-      assert.strictEqual(output.execStat, 'H');
-      assert.strictEqual(output.autoDeploy, false);
-
-      output = utils.assembleRequestBodyObject('', 'E', 'H', 'false');
-      assert.strictEqual(output.runtimeConfig, undefined);
-      assert.strictEqual(output.changeType, 'E');
-      assert.strictEqual(output.execStat, 'H');
-      assert.strictEqual(output.autoDeploy, false);
-    });
-
-    it('should be missing changeType', function () {
-      var utils = require('../index.js');
-      let output = utils.assembleRequestBodyObject('TPZP', null, 'H', 'false');
-      assert.strictEqual(output.runtimeConfig, 'TPZP');
-      assert.strictEqual(output.changeType, undefined);
-      assert.strictEqual(output.execStat, 'H');
-      assert.strictEqual(output.autoDeploy, false);
-
-      output = utils.assembleRequestBodyObject('TPZP', undefined, 'H', 'false');
-      assert.strictEqual(output.runtimeConfig, 'TPZP');
-      assert.strictEqual(output.changeType, undefined);
-      assert.strictEqual(output.execStat, 'H');
-      assert.strictEqual(output.autoDeploy, false);
-
-      output = utils.assembleRequestBodyObject('TPZP', '', 'H', 'false');
-      assert.strictEqual(output.runtimeConfig, 'TPZP');
-      assert.strictEqual(output.changeType, undefined);
-      assert.strictEqual(output.execStat, 'H');
-      assert.strictEqual(output.autoDeploy, false);
-    });
-
-    it('should be missing executionStatus', function () {
-      var utils = require('../index.js');
-      let output = utils.assembleRequestBodyObject('TPZP', 'E', null, 'true');
-      assert.strictEqual(output.runtimeConfig, 'TPZP');
-      assert.strictEqual(output.changeType, 'E');
-      assert.strictEqual(output.execStat, undefined);
-      assert.strictEqual(output.autoDeploy, true);
-
-      output = utils.assembleRequestBodyObject('TPZP', 'E', undefined, 'true');
-      assert.strictEqual(output.runtimeConfig, 'TPZP');
-      assert.strictEqual(output.changeType, 'E');
-      assert.strictEqual(output.execStat, undefined);
-      assert.strictEqual(output.autoDeploy, true);
-
-      output = utils.assembleRequestBodyObject('TPZP', 'E', '', 'true');
-      assert.strictEqual(output.runtimeConfig, 'TPZP');
-      assert.strictEqual(output.changeType, 'E');
-      assert.strictEqual(output.execStat, undefined);
-      assert.strictEqual(output.autoDeploy, true);
-    });
-
-    it('should set autoDeploy to false', function () {
-      var utils = require('../index.js');
-      let output = utils.assembleRequestBodyObject('TPZP', 'E', 'I', null);
-      assert.strictEqual(output.runtimeConfig, 'TPZP');
-      assert.strictEqual(output.changeType, 'E');
-      assert.strictEqual(output.execStat, 'I');
-      assert.strictEqual(output.autoDeploy, false);
-
-      output = utils.assembleRequestBodyObject('TPZP', 'E', 'I', undefined);
-      assert.strictEqual(output.runtimeConfig, 'TPZP');
-      assert.strictEqual(output.changeType, 'E');
-      assert.strictEqual(output.execStat, 'I');
-      assert.strictEqual(output.autoDeploy, false);
-
-      output = utils.assembleRequestBodyObject('TPZP', 'E', 'I', '');
-      assert.strictEqual(output.runtimeConfig, 'TPZP');
-      assert.strictEqual(output.changeType, 'E');
-      assert.strictEqual(output.execStat, 'I');
-      assert.strictEqual(output.autoDeploy, false);
-    });
-  });
-
   describe('#handleResponseBody(responseBody)', function () {
     var utils = require('../index.js');
     it('should throw an exception - responseBody undefined', function () {
@@ -413,12 +327,12 @@ describe('Testing index.js', function () {
     it('should be resolved', async function () {
       let reqUrl = new URL('http://ces:48226/ispw/ISPW/assignments/assignment345/taskIds/generate-await?taskId=a37b46c2&taskId=7bd249ba12&level=DEV2');
       let token = '10987654321';
-      let reqBody = JSON.stringify({
+      let reqBody = {
         runtimeConfig: 'CONFIG1',
         changeType: 'E',
         execStat: 'H',
         autoDeploy: false
-      });
+      };
       nock('http://ces:48226')
         .post('/ispw/ISPW/assignments/assignment345/taskIds/generate-await?taskId=a37b46c2&taskId=7bd249ba12&level=DEV2')
         .reply(200, {
@@ -435,12 +349,12 @@ describe('Testing index.js', function () {
 
       await utils.getHttpPromise(reqUrl, token, reqBody).then((resBody) => {
         console.log('verifying body');
-        assert.strictEqual(resBody.setId, 'S000241246');
-        assert.strictEqual(resBody.url, 'http://10.100.12.250:48226/ispw/cw09-47623/sets/S000241246');
-        assert.strictEqual(resBody.awaitStatus.generateFailedCount, 0);
-        assert.strictEqual(resBody.awaitStatus.generateSuccessCount, 1);
-        assert.strictEqual(resBody.awaitStatus.hasFailures, false);
-        assert.strictEqual(resBody.awaitStatus.taskCount, 1);
+        assert.strictEqual(resBody.data.setId, 'S000241246');
+        assert.strictEqual(resBody.data.url, 'http://10.100.12.250:48226/ispw/cw09-47623/sets/S000241246');
+        assert.strictEqual(resBody.data.awaitStatus.generateFailedCount, 0);
+        assert.strictEqual(resBody.data.awaitStatus.generateSuccessCount, 1);
+        assert.strictEqual(resBody.data.awaitStatus.hasFailures, false);
+        assert.strictEqual(resBody.data.awaitStatus.taskCount, 1);
       }, (error) => {
         assert.fail('should not reach here');
       });
@@ -450,12 +364,12 @@ describe('Testing index.js', function () {
     it('should be rejected', async function () {
       let reqUrl = new URL('http://ces:48226/ispw/ISPW/assignments/assignment345/taskIds/generate-await?taskId=a37b46c2&taskId=7bd249ba12&level=reject');
       let token = '10987654321';
-      let reqBody = JSON.stringify({
+      let reqBody = {
         runtimeConfig: 'CONFIG1',
         changeType: 'E',
         execStat: 'H',
         autoDeploy: false
-      });
+      };
       nock('http://ces:48226')
         .post('/ispw/ISPW/assignments/assignment345/taskIds/generate-await?taskId=a37b46c2&taskId=7bd249ba12&level=reject')
         .replyWithError('A error occurred when connecting to ISPW');

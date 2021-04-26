@@ -1,4 +1,5 @@
 const http = require('http');
+const axios = require('axios').default;
 
 /**
  * Retrieves the action inputs from github core and returns them as a object
@@ -128,32 +129,6 @@ function stringHasContent(inputStr) {
   return hasContent;
 }
 
-/**
- * Assembles an object for the CES request body.
- * @param  {string | undefined} runtimeConfig the runtime configuration passed
- * in the inputs
- * @param  {string | undefined} changeType the change type passed in the inputs
- * @param  {string | undefined} executionStatus the execution status passed
- * in the inputs
- * @param  {string | undefined} autoDeploy whether to auto deploy
- * @return {any} an object with all the fields for the request body filled in
- */
-function assembleRequestBodyObject(runtimeConfig, changeType,
-    executionStatus, autoDeploy) {
-  const requestBody = {};
-  if (stringHasContent(runtimeConfig)) {
-    requestBody.runtimeConfig = runtimeConfig;
-  }
-  if (stringHasContent(changeType)) {
-    requestBody.changeType = changeType;
-  }
-  if (stringHasContent(executionStatus)) {
-    requestBody.execStat = executionStatus;
-  }
-  requestBody.autoDeploy = (autoDeploy === 'true');
-
-  return requestBody;
-}
 
 /**
  * Gets a promise for sending an http request
@@ -163,41 +138,14 @@ function assembleRequestBodyObject(runtimeConfig, changeType,
  * @return {Promise} the Promise for the request
  */
 function getHttpPromise(requestUrl, token, requestBody) {
-  const requestCall = new Promise((resolve, reject) => {
-    const options = {
-      hostname: requestUrl.hostname,
-      port: requestUrl.port,
-      path: requestUrl.pathname + requestUrl.search,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(requestBody),
-        'authorization': token,
-      },
-    };
-    const req = http.request(options, function(response) {
-      let data = '';
-      response.on('data', function(chunk) {
-        data += chunk;
-      });
-      response.on('end', function() {
-        data = JSON.parse(data);
-        // promise resolved on success
-        resolve(data);
-      });
-      response.on('error', function(error) {
-        reject(error);
-      });
-    });
-    req.on('error', function(error) {
-      reject(error);
-    });
 
-    req.write(requestBody);
-    req.end();
-  });
-
-  return requestCall;
+  const options = {
+    headers: {
+      'Content-Type': 'application/json',
+      'authorization': token,
+    }
+  };
+  return axios.post(requestUrl.href, requestBody, options);
 }
 
 /**
@@ -265,7 +213,6 @@ module.exports = {
   validateBuildParms,
   convertObjectToJson,
   assembleRequestUrl,
-  assembleRequestBodyObject,
   stringHasContent,
   GenerateFailureException,
   handleResponseBody,
