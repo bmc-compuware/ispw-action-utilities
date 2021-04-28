@@ -23,11 +23,10 @@ function retrieveInputs(core, inputFields) {
 }
 
 /**
- * Reads the contents of the file at the given path and returns the contents as
- * an object
- * @param  {string} jsonString absolute path to the file to read
- * @return {any | undefined} parsed contents of the file,
- * or undefined if the file is empty
+ * Parses the given JSON string into an object
+ * @param  {string} jsonString the string to parse
+ * @return {any | undefined} parsed contents of the string. This will return undefined if the
+ * string is empty.
  */
 function parseStringAsJson(jsonString) {
   let parsedObj;
@@ -38,7 +37,7 @@ function parseStringAsJson(jsonString) {
 }
 
 /**
- * Validates the given BuildParms object to ensure that all the fields
+ * Validates the given BuildParms object to ensure that all the required fields
  * are filled in.
  * @param  {BuildParms} buildParms the BuildParms object to check
  * @param {string []} requiredFields an array of field names for the required buildParms fields.
@@ -93,11 +92,11 @@ function convertObjectToJson(data) {
 }
 
 /**
- * Assembles the URL to use when sending the generate request.
+ * Assembles the URL to use when sending the CES request.
  * @param  {string} cesUrl the base CES URL that was passed in the action
  * arguments
  * @param  {string} requestPath the action-specific request portion of the request url,
- * beginning with a slash. SFor example,
+ * beginning with a slash. For example,
  * '/ispw/srid/assignments/assignment345/taskIds/generate-await?taskId=7bd249ba12&level=DEV2'
  * @return {URL} the url for the request
  */
@@ -140,13 +139,13 @@ function stringHasContent(inputStr) {
 }
 
 /**
- * Gets a promise for sending an http request
+ * Gets a promise for sending an http POST request
  * @param {URL} requestUrl the URL to send hte request to
  * @param {string} token the token to use during authentication
- * @param {string} requestBody the request body
+ * @param {*} requestBody the request body object
  * @return {Promise} the Promise for the request
  */
-function getHttpPromise(requestUrl, token, requestBody) {
+function getHttpPostPromise(requestUrl, token, requestBody) {
   const options = {
     headers: {
       'Content-Type': 'application/json',
@@ -158,7 +157,7 @@ function getHttpPromise(requestUrl, token, requestBody) {
 
 
 /**
- * The status message in the awaitStatus may be a single string, or an array.
+ * The status message in the awaitStatus coming back from CES may be a single string, or an array.
  * This method determines what the status contains and returns a single string.
  * @param {string | Array} statusMsg the statusMsg inside the awaitStatus in
  * the responseBody
@@ -183,5 +182,5 @@ module.exports = {
   assembleRequestUrl,
   stringHasContent,
   getStatusMessageToPrint,
-  getHttpPromise,
+  getHttpPostPromise,
 };

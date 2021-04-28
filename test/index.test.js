@@ -249,7 +249,7 @@ describe('Testing index.js', function () {
   });
 
 
-  describe('#getHttpPromise(cesUrl, token, requestBody)', function () {
+  describe('#getHttpPostPromise(cesUrl, token, requestBody)', function () {
     const nock = require('nock');
     var utils = require('../index.js');
 
@@ -280,7 +280,7 @@ describe('Testing index.js', function () {
           }
         });
 
-      await utils.getHttpPromise(reqUrl, token, reqBody).then((resBody) => {
+      await utils.getHttpPostPromise(reqUrl, token, reqBody).then((resBody) => {
         console.log('verifying body');
         assert.strictEqual(resBody.data.setId, 'S000241246');
         assert.strictEqual(resBody.data.url, 'http://10.100.12.250:48226/ispw/cw09-47623/sets/S000241246');
@@ -307,7 +307,7 @@ describe('Testing index.js', function () {
         .post('/ispw/ISPW/assignments/assignment345/taskIds/generate-await?taskId=a37b46c2&taskId=7bd249ba12&level=reject')
         .replyWithError('A error occurred when connecting to ISPW');
 
-      await utils.getHttpPromise(reqUrl, token, reqBody).then(() => {
+      await utils.getHttpPostPromise(reqUrl, token, reqBody).then(() => {
         assert.fail('should not reach here');
       }, (error) => {
         console.log('verifying body');
