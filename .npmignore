@@ -3,3 +3,4 @@ test/
 .nyc_output/
 coverage/
 .eslintrc.yml
+.github/

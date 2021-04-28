@@ -1,6 +1,6 @@
 {
   "name": "@bmc-compuware/ispw-action-utilities",
-  "version": "0.1.5",
+  "version": "1.0.0",
   "description": "Utilities to be used in ISPW GitHub actions",
   "main": "index.js",
   "scripts": {
