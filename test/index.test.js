@@ -315,6 +315,30 @@ describe('Testing index.js', function () {
       });
 
     });
+
+    it('should return the response body', async function () {
+      let reqUrl = new URL('http://ces:48226/ispw/ISPW/assignments/assignment345/taskIds/generate-await?taskId=XXXXXXX&level=reject');
+      let token = '10987654321';
+      let reqBody = {
+        runtimeConfig: 'CONFIG1',
+        changeType: 'E',
+        execStat: 'H',
+        autoDeploy: false
+      };
+      nock('http://ces:48226')
+        .post('/ispw/ISPW/assignments/assignment345/taskIds/generate-await?taskId=XXXXXXX&level=reject')
+        .reply(500, {
+          message: 'Task ID XXXXXXX is invalid.'
+        })
+
+      await utils.getHttpPostPromise(reqUrl, token, reqBody).then(() => {
+        assert.fail('should not reach here');
+      }, (error) => {
+        console.log('verifying body: ' + JSON.stringify(error.response.data));
+        assert.strictEqual(error.response.data.message, 'Task ID XXXXXXX is invalid.');
+      });
+
+    });
   });
 
 
