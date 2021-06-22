@@ -74,7 +74,13 @@ To make changes to the functions in this library:
 3. If adding a function, also add it to the module exports at the bottom of the file
 4. Write a test for the new behavior. Tests are located in `test/index.test.js`. To run the tests run `npm run test` from the command line.
 5. To test your changes locally:
-   1. Open the command line and run `npm pack` - this will create a `.tgz` file
-   2. Navigate to the folder of the ISPW GitHub action you are making the changes for. Open a command line and run `npm install [path-to-.tgz-file]`. This will update your package.json to point directly to the tarball path **this change is for local testing only, do not commit to the main branch!**
+   1. Open the command line and run `npm pack` - this will create a `.tgz` file (called a tarball)
+   2. Navigate to the folder of the ISPW GitHub action you are making the changes for. Open a command line and run `npm install [path-to-.tgz-file]`. This will update your package.json to point directly to the tarball path. **This change is for local testing only, do not commit to the main branch!**
    3. Continue making changes to the utilities functions and running `npm pack` to update the tarball file.
-6. Once your utility methods are working the way you want them to, update the version in `package.json`, commit all changes and run `npm publish`. This will run linting, automated tests, and check the code coverage. If everything passes, then a new version of the library will be published to npm. This version is the one that your GitHub action should require.
+6. To publish and use a new version of the utility:
+   1. Once your utility methods are working the way you want them to, update the version in `package.json`
+   2. Commit all changes to the repository and run `npm publish`. This will run linting, automated tests, and check the code coverage.
+   3. If everything passes, then a new version of the library will be published to npm.
+   4. In your GitHub action that needs the new functionality, update the `package.json` to point to the new version you just published.
+
+**It is crucial that you do not make any breaking changes to existing functions (including changing method signatures) unless you are prepared to update all of the github actions to point to the latest version**
