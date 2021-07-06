@@ -79,8 +79,9 @@ To make changes to the functions in this library:
    3. Continue making changes to the utilities functions and running `npm pack` to update the tarball file.
 6. To publish and use a new version of the utility:
    1. Once your utility methods are working the way you want them to, update the version in `package.json`
-   2. Commit all changes to the repository and run `npm publish`. This will run linting, automated tests, and check the code coverage.
+   2. Commit all changes to the repository and run `npm publish --access public`. This will run linting, automated tests, and check the code coverage.
    3. If everything passes, then a new version of the library will be published to npm.
    4. In your GitHub action that needs the new functionality, update the `package.json` to point to the new version you just published.
+   5. For more information on publishing, see the [npm doc](https://docs.npmjs.com/creating-and-publishing-scoped-public-packages)
 
 **It is crucial that you do not make any breaking changes to existing functions (including changing method signatures) unless you are prepared to update all of the github actions to point to the latest version**
