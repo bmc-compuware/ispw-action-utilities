@@ -85,3 +85,6 @@ To make changes to the functions in this library:
    5. For more information on publishing, see the [npm doc](https://docs.npmjs.com/creating-and-publishing-scoped-public-packages)
 
 **It is crucial that you do not make any breaking changes to existing functions (including changing method signatures) unless you are prepared to update all of the github actions to point to the latest version**
+
+## See also
+- [License](LICENSE.txt)
