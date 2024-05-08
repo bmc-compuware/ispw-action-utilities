@@ -155,6 +155,28 @@ function getHttpPostPromise(requestUrl, token, requestBody) {
   return axios.post(requestUrl.href, requestBody, options);
 }
 
+/**
+ * Gets a promise for sending an http POST request with certi
+ * @param {URL} requestUrl the URL to send hte request to
+ * @param {string} certificate the certificate to use during authentication
+ * @param {string} host the host 
+ * @param {string} port the port
+ * @param {*} requestBody the request body object
+ * @return {Promise} the Promise for the request
+ */
+function getHttpPostPromiseWithCert(requestUrl, certificate, host, port, requestBody) {
+  const options = {
+    headers: {
+      'Content-Type': 'application/json',
+      //'authorization': token,
+      'cpwr_hci_host': host,
+      'cpwr_hci_port': port,
+      'javax.servlet.request.X509Certificate': certificate,
+    },
+  };
+  return axios.post(requestUrl.href, requestBody, options);
+}
+
 
 /**
  * The status message in the awaitStatus coming back from CES may be a single string, or an array.
@@ -183,4 +205,5 @@ module.exports = {
   stringHasContent,
   getStatusMessageToPrint,
   getHttpPostPromise,
+  getHttpPostPromiseWithCert,
 };
