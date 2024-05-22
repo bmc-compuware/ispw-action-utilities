@@ -168,7 +168,6 @@ function getHttpPostPromiseWithCert(requestUrl, certificate, host, port, request
   const options = {
     headers: {
       'Content-Type': 'application/json',
-      //'authorization': token,
       'cpwr_hci_host': host,
       'cpwr_hci_port': port,
       'javax.servlet.request.X509Certificate': certificate,
