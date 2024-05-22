@@ -4,6 +4,7 @@
   "description": "Utilities to be used in ISPW GitHub actions",
   "main": "index.js",
   "scripts": {
+    "build": "ncc build",
     "lint": "npx eslint ./**.js --fix",
     "test": "nyc --all=true --exclude=\"dist/**\" --exclude=\"coverage/**\" --exclude=\"test/**\" --reporter=json --reporter=text mocha",
     "coverage": "nyc check-coverage --lines 80 --branches 80 --statements 80 --functions 80",
