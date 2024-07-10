@@ -177,9 +177,7 @@ function getHttpPostPromiseWithCert(requestUrl, certificate, host, port, request
       'javax.servlet.request.X509Certificate': certificate,
     },
   };
-  console.log('url : ' + requestUrl.href);
   const cleanURL = dompurify.sanitize(requestUrl.href);
-  console.log('cleanURL : ' + cleanURL);
   return axios.post(cleanURL, requestBody, options);
 }
 
