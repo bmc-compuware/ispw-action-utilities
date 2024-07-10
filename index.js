@@ -8,6 +8,7 @@
 */
 
 const axios = require('axios').default;
+const dompurify = require('dompurify');
 
 /**
  * Retrieves the action inputs from github core and returns them as a object
@@ -152,7 +153,10 @@ function getHttpPostPromise(requestUrl, token, requestBody) {
       'authorization': token,
     },
   };
-  return axios.post(requestUrl.href, requestBody, options);
+  console.log('url : ' + requestUrl.href);
+  const cleanURL = dompurify.sanitize(requestUrl.href);
+  console.log('cleanURL : ' + cleanURL);
+  return axios.post(cleanURL, requestBody, options);
 }
 
 /**
@@ -173,7 +177,10 @@ function getHttpPostPromiseWithCert(requestUrl, certificate, host, port, request
       'javax.servlet.request.X509Certificate': certificate,
     },
   };
-  return axios.post(requestUrl.href, requestBody, options);
+  console.log('url : ' + requestUrl.href);
+  const cleanURL = dompurify.sanitize(requestUrl.href);
+  console.log('cleanURL : ' + cleanURL);
+  return axios.post(cleanURL, requestBody, options);
 }
 
 
