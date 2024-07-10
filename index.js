@@ -8,7 +8,9 @@
 */
 
 const axios = require('axios').default;
-const dompurify = require('dompurify');
+const {JSDOM} = require('jsdom');
+const createDOMPurify = require('dompurify');
+const DOMPurify = createDOMPurify(new JSDOM('').window);
 
 /**
  * Retrieves the action inputs from github core and returns them as a object
@@ -154,7 +156,7 @@ function getHttpPostPromise(requestUrl, token, requestBody) {
     },
   };
   console.log('url : ' + requestUrl.href);
-  const cleanURL = dompurify.sanitize(requestUrl.href);
+  const cleanURL = DOMPurify.sanitize(requestUrl.href);
   console.log('cleanURL : ' + cleanURL);
   return axios.post(cleanURL, requestBody, options);
 }
@@ -163,7 +165,7 @@ function getHttpPostPromise(requestUrl, token, requestBody) {
  * Gets a promise for sending an http POST request with certi
  * @param {URL} requestUrl the URL to send hte request to
  * @param {string} certificate the certificate to use during authentication
- * @param {string} host the host 
+ * @param {string} host the host
  * @param {string} port the port
  * @param {*} requestBody the request body object
  * @return {Promise} the Promise for the request
@@ -177,7 +179,7 @@ function getHttpPostPromiseWithCert(requestUrl, certificate, host, port, request
       'javax.servlet.request.X509Certificate': certificate,
     },
   };
-  const cleanURL = dompurify.sanitize(requestUrl.href);
+  const cleanURL = DOMPurify.sanitize(requestUrl.href);
   return axios.post(cleanURL, requestBody, options);
 }
 
