@@ -155,9 +155,7 @@ function getHttpPostPromise(requestUrl, token, requestBody) {
       'authorization': token,
     },
   };
-  console.log('url : ' + requestUrl.href);
   const cleanURL = DOMPurify.sanitize(requestUrl.href);
-  console.log('cleanURL : ' + cleanURL);
   return axios.post(cleanURL, requestBody, options);
 }
 
