@@ -12,6 +12,20 @@ const {JSDOM} = require('jsdom');
 const createDOMPurify = require('dompurify');
 const DOMPurify = createDOMPurify(new JSDOM('').window);
 
+
+/**
+ * Set Status Constants
+ */
+const SET_STATE_COMPLETE = 'Complete';
+const SET_STATE_CLOSED = 'Closed';
+const SET_STATE_FAILED = 'Failed';
+const SET_STATE_HELD = 'Held';
+const SET_STATE_RELEASED = 'Released';
+const SET_STATE_TERMINATED = 'Terminated';
+const SET_STATE_WAITING_APPROVAL = 'Waiting-Approval';
+const SET_STATE_WAITING_LOCK = 'Waiting-Lock';
+const SET_STATE_DEPLOY_FAILED = 'Deploy-Failed';
+
 /**
  * Retrieves the action inputs from github core and returns them as a object
  * @param {core} core the GitHub actions core
@@ -199,6 +213,99 @@ function getStatusMessageToPrint(statusMsg) {
   return message;
 }
 
+/**
+ * Polling Set Status
+ * @param {*} url
+ * @param {*} setId
+ * @param {*} token
+ * @param {*} action
+ * @param {*} interval
+ * @param {*} timeout
+ */
+async function pollSetStatus(url, setId, token, action, interval = 2000, timeout = 60000) {
+  const startTime = Date.now(); // Track the start time
+  let approvalCount = 0;
+  try {
+    console.log(`Polling the set status for setId: ${setId}`);
+
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const elapsedTime = Date.now() - startTime;
+
+      // Check if the timeout has been reached
+      if (elapsedTime >= timeout) {
+        console.log(`Polling timed out after ${timeout / 1000} seconds.`);
+        break;
+      }
+
+      // Poll the URL for set status
+      const response = await axios.get(`${url}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${token}`, // Add the token to the headers
+        },
+      });
+
+      console.log('Response: \n', response.data);
+      const setStatus = response.data.state;
+      console.log('Set '+setID+' status - ', setStatus);
+      if (setStatus == SET_STATE_FAILED || setStatus == SET_STATE_DEPLOY_FAILED) {
+        console.log(
+            'Code Pipeline: Set ' + setId + ' - action [%s] failed.',
+            'Deploy',
+        );
+        break;
+      } else if (setStatus == SET_STATE_TERMINATED) {
+        console.log(
+            'Code Pipeline: Set ' + setId + ' - successfully terminated.',
+        );
+        break;
+      } else if (setStatus == SET_STATE_HELD) {
+        console.log(
+            'Code Pipeline: Set ' + setId + ' - successfully held.',
+        );
+        break;
+      } else if (
+        setStatus == SET_STATE_RELEASED ||
+        setStatus == SET_STATE_WAITING_LOCK
+      ) {
+        console.log(
+            'Code Pipeline: Set ' + setId + ' - successfully released.',
+        );
+        break;
+      } else if (setStatus == SET_STATE_WAITING_APPROVAL && approvalCount > 2) {
+        approvalCount++;
+        console.log(
+            'Code Pipeline: In set (' +
+          setId +
+            ') process, Approval required.',
+        );
+        break;
+      } else if (
+        setStatus == SET_STATE_CLOSED ||
+        setStatus == SET_STATE_COMPLETE
+      ) {
+        console.log('Code Pipeline: ' + action + ' completed.');
+        break;
+      }
+
+      // Wait for the specified interval before the next poll
+      await delay(interval);
+    }
+  } catch (error) {
+    console.error('Error while polling:', error.message || error);
+  }
+}
+
+/**
+ * Helper function to delay execution
+ * @param {*} ms millisecond
+ * @return {Promise} returning a promise
+ */
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 
 module.exports = {
   retrieveInputs,
@@ -210,4 +317,5 @@ module.exports = {
   getStatusMessageToPrint,
   getHttpPostPromise,
   getHttpPostPromiseWithCert,
+  pollSetStatus,
 };
