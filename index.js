@@ -248,7 +248,7 @@ async function pollSetStatus(url, setId, token, action, interval = 2000, timeout
 
       console.log('Response: \n', response.data);
       const setStatus = response.data.state;
-      console.log('Set '+setID+' status - ', setStatus);
+      console.log('Set '+setId+' status - ', setStatus);
       if (setStatus == SET_STATE_FAILED || setStatus == SET_STATE_DEPLOY_FAILED) {
         console.log(
             'Code Pipeline: Set ' + setId + ' - action [%s] failed.',
