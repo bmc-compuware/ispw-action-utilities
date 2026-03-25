@@ -325,7 +325,7 @@ async function pollSetStatus(url, setId, token, action, interval = 2000, timeout
         setStatus == SET_STATE_COMPLETE
       ) {
         console.log('Code Pipeline: ' + action + ' completed.');
-        await utils.logStatusOfEachTaskFromSet(inputs.ces_url,
+        await logStatusOfEachTaskFromSet(inputs.ces_url,
             setId, inputs.level, inputs.ces_token, inputs.srid,
             inputs.runtime_configuration).then((message) => {
           core.info(message);
