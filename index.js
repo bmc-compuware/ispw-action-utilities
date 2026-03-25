@@ -11,7 +11,6 @@ const axios = require('axios').default;
 const {JSDOM} = require('jsdom');
 const createDOMPurify = require('dompurify');
 const DOMPurify = createDOMPurify(new JSDOM('').window);
-const core = require('@actions/core');
 
 
 /**
@@ -281,7 +280,7 @@ async function pollSetStatus(url, setId, token, action, interval = 2000, timeout
  * @param {*} cesUrl
  */
 async function pollSetStatus(url, setId, token,
-    action, interval = 2000, timeout = 60000, level, srid, rtConfig, cesUrl) {
+    action, interval = 2000, timeout = 60000, level, srid, rtConfig, cesUrl, core) {
   const startTime = Date.now(); // Track the start time
   let approvalCount = 0;
   try {
@@ -345,7 +344,7 @@ async function pollSetStatus(url, setId, token,
         setStatus == SET_STATE_COMPLETE
       ) {
         console.log('Code Pipeline: ' + action + ' completed.');
-        if (level && srid && rtConfig && cesUrl) {
+        if (level && srid && rtConfig && cesUrl && core) {
           await logStatusOfEachTaskFromSet(cesUrl,
               setId, level, token, srid,
               rtConfig).then((message) => {
