@@ -291,7 +291,7 @@ async function pollSetStatus(url, setId, token, action, interval = 2000, timeout
       if (setStatus == SET_STATE_FAILED || setStatus == SET_STATE_DEPLOY_FAILED) {
         console.log(
             'Code Pipeline: Set ' + setId + ' - action [%s] failed.',
-            'Deploy',
+            action,
         );
         break;
       } else if (setStatus == SET_STATE_TERMINATED) {
@@ -325,6 +325,11 @@ async function pollSetStatus(url, setId, token, action, interval = 2000, timeout
         setStatus == SET_STATE_COMPLETE
       ) {
         console.log('Code Pipeline: ' + action + ' completed.');
+        await utils.logStatusOfEachTaskFromSet(inputs.ces_url,
+            setId, inputs.level, inputs.ces_token, inputs.srid,
+            inputs.runtime_configuration).then((message) => {
+          core.info(message);
+        });
         break;
       }
 
@@ -387,5 +392,5 @@ module.exports = {
   getHttpPostPromiseWithCert,
   getHttpGetPromiseWithCert,
   pollSetStatus,
-  logStatusOfEachTaskFromSet
+  logStatusOfEachTaskFromSet,
 };
