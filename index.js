@@ -11,6 +11,7 @@ const axios = require('axios').default;
 const {JSDOM} = require('jsdom');
 const createDOMPurify = require('dompurify');
 const DOMPurify = createDOMPurify(new JSDOM('').window);
+const core = require('@actions/core');
 
 
 /**
