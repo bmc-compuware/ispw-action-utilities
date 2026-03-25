@@ -278,6 +278,7 @@ async function pollSetStatus(url, setId, token, action, interval = 2000, timeout
  * @param {*} srid
  * @param {*} rtConfig
  * @param {*} cesUrl
+ * @param {*} core
  */
 async function pollSetStatus(url, setId, token,
     action, interval = 2000, timeout = 60000, level, srid, rtConfig, cesUrl, core) {
