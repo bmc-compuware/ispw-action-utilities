@@ -262,6 +262,25 @@ function getStatusMessageToPrint(statusMsg) {
  * @param {*} timeout
  */
 async function pollSetStatus(url, setId, token, action, interval = 2000, timeout = 60000) {
+  pollSetStatus(url, setId, token, action, interval, timeout, null, null, null, null);
+}
+
+
+/**
+ * Polling Set Status
+ * @param {*} url
+ * @param {*} setId
+ * @param {*} token
+ * @param {*} action
+ * @param {*} interval
+ * @param {*} timeout
+ * @param {*} level
+ * @param {*} srid
+ * @param {*} rtConfig
+ * @param {*} cesUrl
+ */
+async function pollSetStatus(url, setId, token,
+    action, interval = 2000, timeout = 60000, level, srid, rtConfig, cesUrl) {
   const startTime = Date.now(); // Track the start time
   let approvalCount = 0;
   try {
@@ -325,11 +344,13 @@ async function pollSetStatus(url, setId, token, action, interval = 2000, timeout
         setStatus == SET_STATE_COMPLETE
       ) {
         console.log('Code Pipeline: ' + action + ' completed.');
-        await logStatusOfEachTaskFromSet(inputs.ces_url,
-            setId, inputs.level, inputs.ces_token, inputs.srid,
-            inputs.runtime_configuration).then((message) => {
-          core.info(message);
-        });
+        if (level && srid && rtConfig && cesUrl) {
+          await logStatusOfEachTaskFromSet(cesUrl,
+              setId, level, token, srid,
+              rtConfig).then((message) => {
+            core.info(message);
+          });
+        }
         break;
       }
 
