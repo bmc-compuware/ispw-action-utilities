@@ -174,6 +174,24 @@ function getHttpPostPromise(requestUrl, token, requestBody) {
 }
 
 /**
+ * Gets a promise for sending an http POST request
+ * @param {URL} requestUrl the URL to send hte request to
+ * @param {string} token the token to use during authentication
+ * @param {*} requestBody the request body object
+ * @return {Promise} the Promise for the request
+ */
+function getHttpGetPromise(requestUrl, token) {
+  const options = {
+    headers: {
+      'Content-Type': 'application/json',
+      'authorization': token,
+    },
+  };
+  const cleanURL = DOMPurify.sanitize(requestUrl.href);
+  return axios.get(cleanURL, options);
+}
+
+/**
  * Gets a promise for sending an http POST request with certi
  * @param {URL} requestUrl the URL to send hte request to
  * @param {string} certificate the certificate to use during authentication
@@ -195,6 +213,27 @@ function getHttpPostPromiseWithCert(requestUrl, certificate, host, port, request
   return axios.post(cleanURL, requestBody, options);
 }
 
+/**
+ * Gets a promise for sending an http POST request with certi
+ * @param {URL} requestUrl the URL to send hte request to
+ * @param {string} certificate the certificate to use during authentication
+ * @param {string} host the host
+ * @param {string} port the port
+ * @param {*} requestBody the request body object
+ * @return {Promise} the Promise for the request
+ */
+function getHttpGetPromiseWithCert(requestUrl, certificate, host, port) {
+  const options = {
+    headers: {
+      'Content-Type': 'application/json',
+      'cpwr_hci_host': host,
+      'cpwr_hci_port': port,
+      'javax.servlet.request.X509Certificate': certificate,
+    },
+  };
+  const cleanURL = DOMPurify.sanitize(requestUrl.href);
+  return axios.get(cleanURL, options);
+}
 
 /**
  * The status message in the awaitStatus coming back from CES may be a single string, or an array.
@@ -298,6 +337,34 @@ async function pollSetStatus(url, setId, token, action, interval = 2000, timeout
 }
 
 /**
+ * Log Status Of Each Task From Set
+ * @param {string} cesUrl
+ * @param {string} setId
+ * @param {string} level
+ * @param {string} token
+ * @param {string} srid
+ * @param {string} rtConfig
+ * @return {string} message containing the status of each task in the set
+ */
+async function logStatusOfEachTaskFromSet(cesUrl, setId, level, token, srid, rtConfig) {
+  const setUrl = assembleRequestUrl(cesUrl,
+      `/ispw/${srid}/sets/${setId}?level=${level}&rtConfig=${rtConfig}`);
+  let message = '';
+  await getHttpGetPromise(setUrl, token).then((response) => {
+    const tasks = response.data.tasks;
+    tasks.forEach((task) => {
+      message = message + `ISPW: ${task.moduleName} generated successfully.\n`;
+    });
+  },
+  (error) => {
+    console.error('Error while getting status of each task from set:',
+        error.response || error.response.statusText);
+  });
+
+  return message;
+}
+
+/**
  * Helper function to delay execution
  * @param {*} ms millisecond
  * @return {Promise} returning a promise
@@ -316,6 +383,9 @@ module.exports = {
   stringHasContent,
   getStatusMessageToPrint,
   getHttpPostPromise,
+  getHttpGetPromise,
   getHttpPostPromiseWithCert,
+  getHttpGetPromiseWithCert,
   pollSetStatus,
+  logStatusOfEachTaskFromSet
 };
