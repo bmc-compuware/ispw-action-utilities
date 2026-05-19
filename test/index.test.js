@@ -6,25 +6,23 @@
 * This code is licensed under MIT license (see LICENSE.txt for details)
 */
 const chai = require('chai');
-const { utils } = require('mocha');
-var assert = chai.assert;
-var expect = chai.expect;
+const {assert, expect} = chai;
+const utils = require('../index.js');
 
-describe('Testing index.js', function () {
+describe('Testing index.js', function() {
 
-  describe('#retrieveInputs(core, inputFields = [])', function () {
-    var utils = require('../index.js');
-    let core = {
-      getInput: function (inputName) {
+  describe('#retrieveInputs(core, inputFields = [])', function() {
+    const core = {
+      getInput: function(inputName) {
         return inputName;
-      }
+      },
     };
-    it('should return inputs', function () {
-      let inputFields = ['generate_automatically',
+    it('should return inputs', function() {
+      const inputFields = ['generate_automatically',
         'assignment_id', 'level', 'task_id', 'ces_url',
         'ces_token', 'srid', 'runtime_configuration', 'change_type',
         'execution_status', 'auto_deploy'];
-      let output = utils.retrieveInputs(core, inputFields);
+      const output = utils.retrieveInputs(core, inputFields);
       assert.strictEqual(output.generate_automatically, 'generate_automatically');
       assert.strictEqual(output.assignment_id, 'assignment_id');
       assert.strictEqual(output.level, 'level');
@@ -41,25 +39,22 @@ describe('Testing index.js', function () {
   });
 
 
-  describe('#parseStringAsJson(jsonString)', function () {
-    it('should return empty buildparms', function () {
-      var utils = require('../index.js');
-      let output = utils.parseStringAsJson(JSON.stringify({}));
+  describe('#parseStringAsJson(jsonString)', function() {
+    it('should return empty buildparms', function() {
+      const output = utils.parseStringAsJson(JSON.stringify({}));
       assert.strictEqual(output.containerId, undefined);
       assert.strictEqual(output.releaseId, undefined);
       assert.strictEqual(output.taksIds, undefined);
       assert.strictEqual(output.taskLevel, undefined);
     });
 
-    it('should return undefined', function () {
-      var utils = require('../index.js');
-      let output = utils.parseStringAsJson('');
+    it('should return undefined', function() {
+      const output = utils.parseStringAsJson('');
       assert.strictEqual(output, undefined);
     });
 
-    it('should return buildParms object with fields filled in', function () {
-      var utils = require('../index.js');
-      let output = utils.parseStringAsJson(JSON.stringify({
+    it('should return buildParms object with fields filled in', function() {
+      const output = utils.parseStringAsJson(JSON.stringify({
         containerId: 'PLAY003736',
         releaseId: ' ',
         taskLevel: 'DEV1',
@@ -73,24 +68,23 @@ describe('Testing index.js', function () {
   });
 
 
-  describe('#validateBuildParms(buildParms, requiredFields = [])', function () {
-    var utils = require('../index.js');
-    it('should return false - no parms defined', function () {
-      let requiredFields = ['containerId', 'taskLevel', 'taskIds'];
-      let buildParms = {};
-      let output = utils.validateBuildParms(buildParms, requiredFields);
+  describe('#validateBuildParms(buildParms, requiredFields = [])', function() {
+    it('should return false - no parms defined', function() {
+      const requiredFields = ['containerId', 'taskLevel', 'taskIds'];
+      const buildParms = {};
+      const output = utils.validateBuildParms(buildParms, requiredFields);
       assert.isFalse(output);
     });
 
-    it('should return false - buildParms are null', function () {
-      let requiredFields = ['containerId', 'taskLevel', 'taskIds'];
-      let output = utils.validateBuildParms(null, requiredFields);
+    it('should return false - buildParms are null', function() {
+      const requiredFields = ['containerId', 'taskLevel', 'taskIds'];
+      const output = utils.validateBuildParms(null, requiredFields);
       assert.isFalse(output);
     });
 
-    it('should return false - buildParms are undefined', function () {
-      let requiredFields = ['containerId', 'taskLevel', 'taskIds'];
-      let output = utils.validateBuildParms(undefined, requiredFields);
+    it('should return false - buildParms are undefined', function() {
+      const requiredFields = ['containerId', 'taskLevel', 'taskIds'];
+      const output = utils.validateBuildParms(undefined, requiredFields);
       assert.isFalse(output);
     });
 

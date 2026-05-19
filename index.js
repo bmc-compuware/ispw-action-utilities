@@ -116,30 +116,46 @@ function convertObjectToJson(data) {
  * beginning with a slash. For example,
  * '/ispw/srid/assignments/assignment345/taskIds/generate-await?taskId=7bd249ba12&level=DEV2'
  * @return {URL} the url for the request
+ * @throws {Error} if cesUrl or requestPath is invalid
  */
 function assembleRequestUrl(cesUrl, requestPath) {
+  if (!stringHasContent(cesUrl)) {
+    throw new Error('CES URL is required');
+  }
+  if (!stringHasContent(requestPath)) {
+    throw new Error('Request path is required');
+  }
+
+  // Sanitize inputs before processing
+  cesUrl = DOMPurify.sanitize(cesUrl);
+  requestPath = DOMPurify.sanitize(requestPath);
+
   // remove trailing '/compuware' from url, if it exists
   let lowercaseUrl = cesUrl.toLowerCase();
   const cpwrIndex = lowercaseUrl.lastIndexOf('/compuware');
   if (cpwrIndex > 0) {
-    cesUrl = cesUrl.substr(0, cpwrIndex);
+    cesUrl = cesUrl.substring(0, cpwrIndex);
   }
 
   // remove trailing '/ispw' from url, if it exists
   lowercaseUrl = cesUrl.toLowerCase();
   const ispwIndex = lowercaseUrl.lastIndexOf('/ispw');
   if (ispwIndex > 0) {
-    cesUrl = cesUrl.substr(0, ispwIndex);
+    cesUrl = cesUrl.substring(0, ispwIndex);
   }
 
   // remove trailing slash
   if (cesUrl.endsWith('/')) {
-    cesUrl = cesUrl.substr(0, cesUrl.length - 1);
+    cesUrl = cesUrl.substring(0, cesUrl.length - 1);
   }
 
   const tempUrlStr = cesUrl.concat(requestPath);
-  const url = new URL(tempUrlStr);
-  return url;
+  try {
+    const url = new URL(tempUrlStr);
+    return url;
+  } catch (error) {
+    throw new Error(`Invalid URL: ${tempUrlStr}. Error: ${error.message}`);
+  }
 }
 
 /**
@@ -157,50 +173,81 @@ function stringHasContent(inputStr) {
 
 /**
  * Gets a promise for sending an http POST request
- * @param {URL} requestUrl the URL to send hte request to
+ * @param {URL} requestUrl the URL to send the request to
  * @param {string} token the token to use during authentication
  * @param {*} requestBody the request body object
  * @return {Promise} the Promise for the request
+ * @throws {Error} if requestUrl or token is invalid
  */
 function getHttpPostPromise(requestUrl, token, requestBody) {
+  if (!requestUrl || !requestUrl.href) {
+    throw new Error('Valid request URL is required');
+  }
+  if (!stringHasContent(token)) {
+    throw new Error('Authentication token is required');
+  }
+
   const options = {
     headers: {
       'Content-Type': 'application/json',
       'authorization': token,
     },
+    timeout: 30000, // 30 second timeout
   };
   const cleanURL = DOMPurify.sanitize(requestUrl.href);
   return axios.post(cleanURL, requestBody, options);
 }
 
 /**
- * Gets a promise for sending an http POST request
- * @param {URL} requestUrl the URL to send hte request to
+ * Gets a promise for sending an http GET request
+ * @param {URL} requestUrl the URL to send the request to
  * @param {string} token the token to use during authentication
- * @param {*} requestBody the request body object
  * @return {Promise} the Promise for the request
+ * @throws {Error} if requestUrl or token is invalid
  */
 function getHttpGetPromise(requestUrl, token) {
+  if (!requestUrl || !requestUrl.href) {
+    throw new Error('Valid request URL is required');
+  }
+  if (!stringHasContent(token)) {
+    throw new Error('Authentication token is required');
+  }
+
   const options = {
     headers: {
       'Content-Type': 'application/json',
       'authorization': token,
     },
+    timeout: 30000, // 30 second timeout
   };
   const cleanURL = DOMPurify.sanitize(requestUrl.href);
   return axios.get(cleanURL, options);
 }
 
 /**
- * Gets a promise for sending an http POST request with certi
- * @param {URL} requestUrl the URL to send hte request to
+ * Gets a promise for sending an http POST request with certificate authentication
+ * @param {URL} requestUrl the URL to send the request to
  * @param {string} certificate the certificate to use during authentication
  * @param {string} host the host
  * @param {string} port the port
  * @param {*} requestBody the request body object
  * @return {Promise} the Promise for the request
+ * @throws {Error} if required parameters are invalid
  */
 function getHttpPostPromiseWithCert(requestUrl, certificate, host, port, requestBody) {
+  if (!requestUrl || !requestUrl.href) {
+    throw new Error('Valid request URL is required');
+  }
+  if (!stringHasContent(certificate)) {
+    throw new Error('Certificate is required');
+  }
+  if (!stringHasContent(host)) {
+    throw new Error('Host is required');
+  }
+  if (!stringHasContent(port)) {
+    throw new Error('Port is required');
+  }
+
   const options = {
     headers: {
       'Content-Type': 'application/json',
@@ -208,21 +255,35 @@ function getHttpPostPromiseWithCert(requestUrl, certificate, host, port, request
       'cpwr_hci_port': port,
       'javax.servlet.request.X509Certificate': certificate,
     },
+    timeout: 30000, // 30 second timeout
   };
   const cleanURL = DOMPurify.sanitize(requestUrl.href);
   return axios.post(cleanURL, requestBody, options);
 }
 
 /**
- * Gets a promise for sending an http POST request with certi
- * @param {URL} requestUrl the URL to send hte request to
+ * Gets a promise for sending an http GET request with certificate authentication
+ * @param {URL} requestUrl the URL to send the request to
  * @param {string} certificate the certificate to use during authentication
  * @param {string} host the host
  * @param {string} port the port
- * @param {*} requestBody the request body object
  * @return {Promise} the Promise for the request
+ * @throws {Error} if required parameters are invalid
  */
 function getHttpGetPromiseWithCert(requestUrl, certificate, host, port) {
+  if (!requestUrl || !requestUrl.href) {
+    throw new Error('Valid request URL is required');
+  }
+  if (!stringHasContent(certificate)) {
+    throw new Error('Certificate is required');
+  }
+  if (!stringHasContent(host)) {
+    throw new Error('Host is required');
+  }
+  if (!stringHasContent(port)) {
+    throw new Error('Port is required');
+  }
+
   const options = {
     headers: {
       'Content-Type': 'application/json',
@@ -230,6 +291,7 @@ function getHttpGetPromiseWithCert(requestUrl, certificate, host, port) {
       'cpwr_hci_port': port,
       'javax.servlet.request.X509Certificate': certificate,
     },
+    timeout: 30000, // 30 second timeout
   };
   const cleanURL = DOMPurify.sanitize(requestUrl.href);
   return axios.get(cleanURL, options);
@@ -254,34 +316,30 @@ function getStatusMessageToPrint(statusMsg) {
 
 /**
  * Polling Set Status
- * @param {*} url
- * @param {*} setId
- * @param {*} token
- * @param {*} action
- * @param {*} interval
- * @param {*} timeout
- */
-async function pollSetStatus(url, setId, token, action, interval = 2000, timeout = 60000) {
-  pollSetStatus(url, setId, token, action, interval, timeout, null, null, null, null);
-}
-
-
-/**
- * Polling Set Status
- * @param {*} url
- * @param {*} setId
- * @param {*} token
- * @param {*} action
- * @param {*} interval
- * @param {*} timeout
- * @param {*} level
- * @param {*} srid
- * @param {*} rtConfig
- * @param {*} cesUrl
- * @param {*} core
+ * @param {string} url - The URL to poll for set status
+ * @param {string} setId - The set ID to monitor
+ * @param {string} token - Authentication token
+ * @param {string} action - The action being performed
+ * @param {number} [interval=2000] - Polling interval in milliseconds
+ * @param {number} [timeout=60000] - Timeout in milliseconds
+ * @param {string} [level] - Optional task level
+ * @param {string} [srid] - Optional SRID
+ * @param {string} [rtConfig] - Optional runtime configuration
+ * @param {string} [cesUrl] - Optional CES URL
+ * @param {*} [core] - Optional GitHub Actions core object
+ * @return {Promise<void>}
  */
 async function pollSetStatus(url, setId, token,
     action, interval = 2000, timeout = 60000, level, srid, rtConfig, cesUrl, core) {
+  if (!stringHasContent(url)) {
+    throw new Error('Poll URL is required');
+  }
+  if (!stringHasContent(setId)) {
+    throw new Error('Set ID is required');
+  }
+  if (!stringHasContent(token)) {
+    throw new Error('Authentication token is required');
+  }
   const startTime = Date.now(); // Track the start time
   let approvalCount = 0;
   try {
@@ -384,8 +442,10 @@ async function logStatusOfEachTaskFromSet(cesUrl, setId, level, token, srid, rtC
     });
   },
   (error) => {
-    console.error('Error while getting status of each task from set:',
-        error.response || error.response.statusText);
+    const errorDetails = error.response ?
+      `${error.response.status} - ${error.response.statusText}` :
+      error.message;
+    console.error('Error while getting status of each task from set:', errorDetails);
   });
 
   return message;
