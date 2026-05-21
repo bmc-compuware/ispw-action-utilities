@@ -7,6 +7,7 @@
 */
 const chai = require('chai');
 const {assert, expect} = chai;
+const nock = require('nock');
 const utils = require('../index.js');
 
 describe('Testing index.js', function() {
@@ -50,6 +51,16 @@ describe('Testing index.js', function() {
 
     it('should return undefined', function() {
       const output = utils.parseStringAsJson('');
+      assert.strictEqual(output, undefined);
+    });
+
+    it('should return undefined for invalid JSON', function() {
+      const output = utils.parseStringAsJson('{invalid json}');
+      assert.strictEqual(output, undefined);
+    });
+
+    it('should return undefined for malformed JSON', function() {
+      const output = utils.parseStringAsJson('{"key": incomplete');
       assert.strictEqual(output, undefined);
     });
 
@@ -353,6 +364,45 @@ describe('Testing index.js', function() {
     it('should handle single string', function () {
       let output = utils.getStatusMessageToPrint('string message');
       assert.strictEqual(output, 'string message');
+    });
+  });
+
+  describe('#getHttpGetPromiseWithCert(requestUrl, certificate, host, port)', function() {
+    afterEach(() => {
+      nock.cleanAll();
+    });
+
+    it('should make GET request with certificate headers', async function() {
+      const testUrl = new URL('https://ces:48226/ispw/test');
+      const cert = 'test-certificate';
+      const host = 'mainframe.example.com';
+      const port = '2121';
+
+      nock('https://ces:48226')
+          .get('/ispw/test')
+          .reply(200, {status: 'success'});
+
+      const promise = utils.getHttpGetPromiseWithCert(testUrl, cert, host, port);
+      const response = await promise;
+      assert.strictEqual(response.data.status, 'success');
+    });
+
+    it('should handle GET request errors with certificate', async function() {
+      const testUrl = new URL('https://ces:48226/ispw/error');
+      const cert = 'test-certificate';
+      const host = 'mainframe.example.com';
+      const port = '2121';
+
+      nock('https://ces:48226')
+          .get('/ispw/error')
+          .reply(500, {error: 'Internal error'});
+
+      try {
+        await utils.getHttpGetPromiseWithCert(testUrl, cert, host, port);
+        assert.fail('Should have thrown an error');
+      } catch (error) {
+        assert.isOk(error);
+      }
     });
   });
 

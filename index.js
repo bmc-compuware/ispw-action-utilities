@@ -3,7 +3,7 @@
 * SOFTWARE, INC. ALL OTHER COMPANY PRODUCT NAMES ARE TRADEMARKS OF THEIR
 * RESPECTIVE OWNERS.
 *
-* (c) Copyright 2021 BMC Software, Inc.
+* (c) Copyright 2021-2026 BMC Software, Inc.
 * This code is licensed under MIT license (see LICENSE.txt for details)
 */
 
@@ -48,7 +48,12 @@ function retrieveInputs(core, inputFields) {
 function parseStringAsJson(jsonString) {
   let parsedObj;
   if (stringHasContent(jsonString)) {
-    parsedObj = JSON.parse(jsonString);
+    try {
+      parsedObj = JSON.parse(jsonString);
+    } catch (error) {
+      console.error(`Invalid JSON string: ${error.message}`);
+      return undefined;
+    }
   }
   return parsedObj;
 }
@@ -85,7 +90,7 @@ function validateBuildParms(buildParms, requiredFields) {
  */
 function getMissingInputMessage(fieldName) {
   const fieldNameReplacement = {
-    containerId: 'n assignment ID',
+    containerId: 'an assignment ID',
     releaseId: ' release ID',
     taskLevel: ' level',
     taskIds: ' list of task IDs',
@@ -102,7 +107,7 @@ function getMissingInputMessage(fieldName) {
  */
 function convertObjectToJson(data) {
   let dataStr = '';
-  if (data !== null && data != undefined) {
+  if (data !== null && data !== undefined) {
     dataStr = JSON.stringify(data);
   }
   return dataStr;
@@ -306,7 +311,7 @@ function getHttpGetPromiseWithCert(requestUrl, certificate, host, port) {
  */
 function getStatusMessageToPrint(statusMsg) {
   let message = '';
-  if (typeof statusMsg == 'string') {
+  if (typeof statusMsg === 'string') {
     message = statusMsg;
   } else if (statusMsg instanceof Array) {
     statusMsg.forEach((line) => message = message + `${line}\n`);
@@ -332,7 +337,7 @@ function getStatusMessageToPrint(statusMsg) {
 async function pollSetStatus(url, setId, token,
     action, interval = 2000, timeout = 60000, level, srid, rtConfig, cesUrl, core) {
   if (!stringHasContent(url)) {
-    throw new Error('Poll URL is required');
+    throw new Error('Set URL is required');
   }
   if (!stringHasContent(setId)) {
     throw new Error('Set ID is required');
@@ -343,9 +348,7 @@ async function pollSetStatus(url, setId, token,
   const startTime = Date.now(); // Track the start time
   let approvalCount = 0;
   try {
-    console.log(`Polling the set status for setId: ${setId}`);
-
-    // eslint-disable-next-line no-constant-condition
+    console.log(`Polling the set status for setId: ${setId}`);     
     while (true) {
       const elapsedTime = Date.now() - startTime;
 
@@ -361,48 +364,48 @@ async function pollSetStatus(url, setId, token,
           'Content-Type': 'application/json',
           'Authorization': `${token}`, // Add the token to the headers
         },
+         timeout: 60000, // 60 second timeout for the polling request
       });
 
       console.log('Response: \n', response.data);
       const setStatus = response.data.state;
       console.log('Set '+setId+' status - ', setStatus);
-      if (setStatus == SET_STATE_FAILED || setStatus == SET_STATE_DEPLOY_FAILED) {
+      if (setStatus === SET_STATE_FAILED || setStatus === SET_STATE_DEPLOY_FAILED) {
         console.log(
-            'Code Pipeline: Set ' + setId + ' - action [%s] failed.',
-            action,
+            `Code Pipeline: Set ${setId} - action [${action}] failed.`,
         );
         break;
-      } else if (setStatus == SET_STATE_TERMINATED) {
+      } else if (setStatus === SET_STATE_TERMINATED) {
         console.log(
-            'Code Pipeline: Set ' + setId + ' - successfully terminated.',
+            `Code Pipeline: Set ${setId} - successfully terminated.`,
         );
         break;
-      } else if (setStatus == SET_STATE_HELD) {
+      } else if (setStatus === SET_STATE_HELD) {
         console.log(
-            'Code Pipeline: Set ' + setId + ' - successfully held.',
+            `Code Pipeline: Set ${setId} - successfully held.`,
         );
         break;
       } else if (
-        setStatus == SET_STATE_RELEASED ||
-        setStatus == SET_STATE_WAITING_LOCK
+        setStatus === SET_STATE_RELEASED ||
+        setStatus === SET_STATE_WAITING_LOCK
       ) {
         console.log(
-            'Code Pipeline: Set ' + setId + ' - successfully released.',
+            `Code Pipeline: Set ${setId} - successfully released.`,
         );
         break;
-      } else if (setStatus == SET_STATE_WAITING_APPROVAL && approvalCount > 2) {
+      } else if (setStatus === SET_STATE_WAITING_APPROVAL) {
         approvalCount++;
-        console.log(
-            'Code Pipeline: In set (' +
-          setId +
-            ') process, Approval required.',
-        );
-        break;
+        if (approvalCount > 2) {
+          console.log(
+              `Code Pipeline: In set (${setId}) process, Approval required.`,
+          );
+          break;
+        }
       } else if (
-        setStatus == SET_STATE_CLOSED ||
-        setStatus == SET_STATE_COMPLETE
+        setStatus === SET_STATE_CLOSED ||
+        setStatus === SET_STATE_COMPLETE
       ) {
-        console.log('Code Pipeline: ' + action + ' completed.');
+        console.log(`Code Pipeline: ${action} completed.`);
         if (level && srid && rtConfig && cesUrl && core) {
           await logStatusOfEachTaskFromSet(cesUrl,
               setId, level, token, srid,

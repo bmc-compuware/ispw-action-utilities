@@ -262,7 +262,7 @@ describe('Enhanced Validation Tests', function() {
         await utils.pollSetStatus('', 'SET001', 'token', 'deploy');
         assert.fail('Should have thrown error');
       } catch (error) {
-        assert.equal(error.message, 'Poll URL is required');
+        assert.equal(error.message, 'Set URL is required');
       }
     });
 
