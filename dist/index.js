@@ -64296,12 +64296,14 @@ async function pollSetStatus(url, setId, token,
             `Code Pipeline: Set ${setId} - successfully released.`,
         );
         break;
-      } else if (setStatus === SET_STATE_WAITING_APPROVAL && approvalCount > 2) {
+      } else if (setStatus === SET_STATE_WAITING_APPROVAL) {
         approvalCount++;
-        console.log(
-            `Code Pipeline: In set (${setId}) process, Approval required.`,
-        );
-        break;
+        if (approvalCount > 2) {
+          console.log(
+              `Code Pipeline: In set (${setId}) process, Approval required.`,
+          );
+          break;
+        }
       } else if (
         setStatus === SET_STATE_CLOSED ||
         setStatus === SET_STATE_COMPLETE
