@@ -1,37 +1,6 @@
-# Dependencies
 node_modules/
-
-# Testing
 test/
 .nyc_output/
 coverage/
-*.test.js
-
-# Build & Config
+.eslintrc.yml
 .github/
-.vscode/
-eslint.config.mjs
-.eslintcache
-.fortifyignore
-
-# Documentation (keep only essentials)
-PRODUCTION_IMPROVEMENTS.md
-SECURITY_AUDIT.md
-
-# Git
-.git/
-.gitignore
-.gitattributes
-
-# CI/CD
-.travis.yml
-.circleci/
-azure-pipelines.yml
-
-# Misc
-*.log
-*.tgz
-.DS_Store
-Thumbs.db
-.env
-.env.test
