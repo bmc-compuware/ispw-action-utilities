@@ -260,20 +260,6 @@ function getStatusMessageToPrint(statusMsg) {
  * @param {*} action
  * @param {*} interval
  * @param {*} timeout
- */
-async function pollSetStatus(url, setId, token, action, interval = 2000, timeout = 60000) {
-  pollSetStatus(url, setId, token, action, interval, timeout, null, null, null, null);
-}
-
-
-/**
- * Polling Set Status
- * @param {*} url
- * @param {*} setId
- * @param {*} token
- * @param {*} action
- * @param {*} interval
- * @param {*} timeout
  * @param {*} level
  * @param {*} srid
  * @param {*} rtConfig
@@ -287,7 +273,7 @@ async function pollSetStatus(url, setId, token,
   try {
     console.log(`Polling the set status for setId: ${setId}`);
 
-    // eslint-disable-next-line no-constant-condition
+     
     while (true) {
       const elapsedTime = Date.now() - startTime;
 
